@@ -1,7 +1,7 @@
 import random
 import re
+import json
 
-# Definindo a cotação dos pontos
 cotacao_pontos = {
     "material/Kg": {
         "Papel": 20,
@@ -12,72 +12,51 @@ cotacao_pontos = {
     },
 }
 
-# Definindo o usuário administradror
-administrador = {
-    "66666": {
-        "nome": "Administrador",
-        "infos": {
-            "Email": "admin@reuse.com"
-        },
-    },
-}
-
-# Dicionário de usuários
-usuarios = {
-    # Exemplo de usuário
-    "97973": {
-        "nome": "Emanuelle",
-        "infos": {
-            "Email": "rm97973@fiap.com.br",
-            "Telefone": "11949693019"
-        },
-        "Dados": {
-            "reciclagem_kg": {
-                "Papel": 6,
-                "Plástico": 13,
-                "Vidro": 20,
-                "Metal": 30,
-                "Eletrônicos": 5
-            },
-            "Pontos": 4563
-        },
-    },
-    "00000": {
-        "nome": "",
-        "infos": {
-            "Email": "",
-            "Telefone": ""
-        },
-        "Dados": {
-            "reciclagem_kg": {
-                "Papel": 0,
-                "Plástico": 0,
-                "Vidro": 0,
-                "Metal": 0,
-                "Eletrônicos": 0
-            },
-            "Pontos": 0,
-        },
+# Função para salvar os dados de usuários e administrador em JSON
+def save_data_to_json():
+    data = {
+        "usuarios": usuarios,
+        "administrador": administrador
     }
-}
+    with open('data.json', 'w') as json_file:
+        json.dump(data, json_file, indent=4)
+        
 
-# Gerando pins aleatórios para novos usuários, para a função cadastro
+# Função para carregar os dados de usuários e administrador a partir de JSON
+def load_data_from_json():
+    try:
+        with open('data.json', 'r') as json_file:
+            data = json.load(json_file)
+            return data.get("usuarios", {}), data.get("administrador", {})
+    except FileNotFoundError:
+        return {}, {}
+
+# Carregar dados de usuários e administrador do arquivo JSON
+usuarios, administrador = load_data_from_json()
+
+# Função para gerar PIN aleatório para novos usuários
 def gerar_pin_aleatorio():
     pin = ''.join(str(random.randint(0, 9)) for _ in range(5))
     return pin
 
-
-# Função para validar um número de telefone no formato xxxxxxxxx
+# Função para validar um número de telefone no formato xxxxxxxxxxx
 def validar_numero_telefone(telefone):
     padrao = r'^\d{11}$'
     return re.match(padrao, telefone) is not None
-
 
 # Função para validar um endereço de e-mail
 def validar_email(email):
     padrao = r'^[\w\.-]+@[\w\.-]+$'
     return re.match(padrao, email) is not None
 
+# Função para salvar os dados de usuários e administrador em JSON
+def save_data_to_json():
+    data = {
+        "usuarios": usuarios,
+        "administrador": administrador
+    }
+    with open('data.json', 'w') as json_file:
+        json.dump(data, json_file, indent=4)
 
 # Função para realizar o cadastro
 def cadastro():
@@ -101,9 +80,6 @@ def cadastro():
 
     # Fazendo um sorteio para gerar o PIN (com 5 dígitos)
     pin_aleatorio = gerar_pin_aleatorio()
-
-    # Converta o PIN para uma string
-    pin_aleatorio = str(pin_aleatorio)
 
     # Atualizando o dicionário de usuários com os novos dados gerados
     usuarios[pin_aleatorio] = {
@@ -131,7 +107,6 @@ def cadastro():
 def sorteio_entrada_dados():
     return random.randint(1, 10)  # Modifique o intervalo conforme necessário
 
-
 # Função para adicionar os pontos e kg dos materiais na reciclagem
 def adicionar_pontos_e_material(pin, material, quantidade_pontos, quantidade_material):
     if pin in usuarios:
@@ -153,7 +128,6 @@ def adicionar_pontos_e_material(pin, material, quantidade_pontos, quantidade_mat
         usuario["Dados"]["Pontos"] += quantidade_pontos
     else:
         print("PIN de usuário não encontrado.")
-
 
 # Função para reciclar
 def opcao_reciclar():
@@ -205,7 +179,6 @@ def opcao_reciclar():
         if continuar_reciclando != 1:
             break
 
-
 # Função para exibir extrato de pontos do usuário
 def exibir_extrato_pontos(pin):
     if pin in usuarios:
@@ -215,7 +188,6 @@ def exibir_extrato_pontos(pin):
         print(f"Pontos: {usuario['Dados']['Pontos']}\n")
     else:
         print("Usuário não encontrado.")
-
 
 # Função para exibir informações do usuário
 def exibir_informacoes_usuario(pin):
@@ -232,13 +204,11 @@ def exibir_informacoes_usuario(pin):
     else:
         print("Usuário não encontrado.")
 
-
 # Função para exibir cotação de pontos atual
 def exibir_cotacao_pontos():
     print("Cotação Atual de Materiais (Pontos por Kg):\n")
     for material, pontos in cotacao_pontos["material/Kg"].items():
         print(f"{material}: {pontos} pontos por Kg")
-
 
 # Lista usuarios para o adm
 def listar_usuarios():
@@ -254,8 +224,7 @@ def listar_usuarios():
             print(f"{material}: {quantidade} Kg")
         print("\n")
 
-
-# Função apra o adm conseguir mudar a cotação de pontos
+# Função para o adm conseguir mudar a cotação de pontos
 def mudar_cotacao_pontos():
     print("\nMudar Cotação de Pontos:\n")
     print("Escolha um material para atualizar a cotação:")
@@ -286,7 +255,6 @@ def mudar_cotacao_pontos():
 
     cotacao_pontos['material/Kg'][material] = nova_cotacao
     print(f"A cotação de pontos para {material} foi atualizada para {nova_cotacao} pontos por Kg.")
-
 
 # Função para alterar informações de um usuário
 def alterar_informacoes_usuario():
@@ -328,7 +296,6 @@ def alterar_informacoes_usuario():
 
     print(f"As informações do usuário {pin_usuario} foram alteradas com sucesso.")
 
-
 # Função para excluir um usuário (apenas adm possui esse acesso)
 def excluir_usuario():
     print("\nExcluir Usuário:\n")
@@ -340,7 +307,7 @@ def excluir_usuario():
         return
 
     print(
-        f"Tem certeza de que deseja excluir o usuário {pin_usuario}? (S para sim, qualquer outra tecla para cancelar)")
+        f"Tem certeza de que deseja excluir o usuário {pin_usuario}?\n(S)\tpara SIM\nQualquer outra tecla para cancelar)")
     confirmacao = input().strip().lower()
 
     if confirmacao == 's':
@@ -348,7 +315,6 @@ def excluir_usuario():
         print(f"O usuário {pin_usuario} foi excluído com sucesso.")
     else:
         print("A exclusão foi cancelada.")
-
 
 # Função para adicionar um novo usuário (apenas adm possui esse acesso)
 def adicionar_usuario():
@@ -391,8 +357,7 @@ def adicionar_usuario():
 
     print(f"Novo usuário adicionado com sucesso. PIN: {novo_pin}")
 
-
-# menu adm
+# Função para o menu do administrador
 def nav_menu_adm():
     while True:
         print("Menu do Administrador:")
@@ -424,63 +389,64 @@ def nav_menu_adm():
         else:
             print("Opção inválida. Por favor, escolha uma opção válida.")
 
+# Função para o menu principal
+def main_menu():
+    while True:
+        # Desejando boas vindas ao usuário
+        print("*************************")
+        print("****Bem Vindo a reUse****")
+        print("*************************")
 
-####################
-# Programa principal
-####################
+        # Menu inicial
+        print("Escolha uma opção:")
+        print("(1)\tEntrar\n"
+              "(2)\tCadastrar-se\n"
+              "(3)\tSair")
+        escolha_menu_inicial = input()
 
-while True:
-    # Desejando boas vindas ao usuário
-    print("*************************")
-    print("****Bem Vindo a reUse****")
-    print("*************************")
+        # Estrutura de decisão para decidir qual menu vai ser exibido (adm ou usuário)
+        if escolha_menu_inicial == "1":
+            print("Por favor insira o seu PIN de 5 dígitos:")
+            pin = input()
+            if pin == "66666":
+                print("*Área restrita reUse*\n")
+                nav_menu_adm()
+            elif pin in usuarios:
+                usuario = usuarios[pin]
+                print(f"Bem-vindo, {usuario['nome']}! Estamos felizes em receber de volta.")
 
-    # Menu inicial
-    print("Escolha uma opção:")
-    print("(1)\tEntrar\n"
-          "(2)\tCadastrar-se\n"
-          "(3)\tSair")
-    escolha_menu_inicial = input()
+                nav_menu_secundario = True
+                while nav_menu_secundario:
+                    print(
+                        "Escolha uma opção:\n"
+                        "(1)\tReciclar\n"
+                        "(2)\tExtrato de pontos\n"
+                        "(3)\tCotação Atual de materiais\n"
+                        "(4)\tVer informações do usuário\n"
+                        "(5)\tSair")
+                    escolha_menu_secundario = input()
 
-    # Estrutura de decisão para decidir qual menu vai ser exibido (adm ou usuário)
-    if escolha_menu_inicial == "1":
-        print("Por favor insira o seu PIN de 5 dígitos:")
-        pin = input()
-        if pin == "66666":
-            print("*Área restrita reUse*\n")
-            nav_menu_adm()
-        elif pin in usuarios:
-            usuario = usuarios[pin]
-            print(f"Bem-vindo, {usuario['nome']}! Estamos felizes em receber de volta.")
-
-            nav_menu_secundario = True
-            while nav_menu_secundario:
-                print(
-                    "Escolha uma opção:\n"
-                    "(1)\tReciclar\n"
-                    "(2)\tExtrato de pontos\n"
-                    "(3)\tCotação Atual de materiais\n"
-                    "(4)\tVer informações do usuário\n"
-                    "(5)\tSair")
-                escolha_menu_secundario = input()
-
-                if escolha_menu_secundario == "1":
-                    opcao_reciclar()
-                elif escolha_menu_secundario == "2":
-                    exibir_extrato_pontos(pin)
-                elif escolha_menu_secundario == "3":
-                    exibir_cotacao_pontos()
-                elif escolha_menu_secundario == "4":
-                    exibir_informacoes_usuario(pin)
-                elif escolha_menu_secundario == "5":
-                    nav_menu_secundario = False
+                    if escolha_menu_secundario == "1":
+                        opcao_reciclar()
+                    elif escolha_menu_secundario == "2":
+                        exibir_extrato_pontos(pin)
+                    elif escolha_menu_secundario == "3":
+                        exibir_cotacao_pontos()
+                    elif escolha_menu_secundario == "4":
+                        exibir_informacoes_usuario(pin)
+                    elif escolha_menu_secundario == "5":
+                        nav_menu_secundario = False
+            else:
+                print("PIN não encontrado. Por favor, verifique o PIN e tente novamente.")
+        elif escolha_menu_inicial == "2":
+            cadastro()
+        elif escolha_menu_inicial == "3":
+            save_data_to_json()
+            break
         else:
-            print("PIN não encontrado. Por favor, verifique o PIN e tente novamente.")
-    elif escolha_menu_inicial == "2":
-        cadastro()
-    elif escolha_menu_inicial == "3":
-        break
-    else:
-        print("Opção inválida. Por favor, escolha uma opção válida.")
+            print("Opção inválida. Por favor, escolha uma opção válida.")
 
-print("Obrigado por usar o reUse. Até mais!")
+    print("Obrigado por usar o reUse. Até mais!")
+
+# Programa principal
+main_menu()
