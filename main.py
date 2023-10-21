@@ -2,39 +2,51 @@ import random
 import re
 import json
 
-cotacao_pontos = {
-    "material/Kg": {
-        "Papel": 20,
-        "Plástico": 25,
-        "Vidro": 15,
-        "Metal": 10,
-        "Eletrônicos": 30
-    },
+# Inicialização das estruturas de dados
+usuarios = {}
+administrador = {
+    "66666": {
+        "nome": "Administrador",
+        "infos": {
+            "Email": "admin@reuse.com"
+        }
+    }
 }
 
-# Função para salvar os dados de usuários e administrador em JSON
+cotacao_pontos = {
+    "Papel": 20,
+    "Plástico": 25,
+    "Vidro": 15,
+    "Metal": 10,
+    "Eletrônicos": 30
+}
+
+# Função para salvar os dados em um arquivo JSON
 def save_data_to_json():
     data = {
         "usuarios": usuarios,
-        "administrador": administrador
+        "administrador": administrador,
+        "cotacao_pontos": cotacao_pontos
     }
     with open('data.json', 'w') as json_file:
         json.dump(data, json_file, indent=4)
-        
 
-# Função para carregar os dados de usuários e administrador a partir de JSON
+# Função para carregar os dados de um arquivo JSON
 def load_data_from_json():
     try:
         with open('data.json', 'r') as json_file:
             data = json.load(json_file)
-            return data.get("usuarios", {}), data.get("administrador", {})
+            usuarios.update(data.get("usuarios", {}))
+            administrador.update(data.get("administrador", {}))
+            cotacao_pontos.update(data.get("cotacao_pontos", {}))
     except FileNotFoundError:
-        return {}, {}
+        # Se o arquivo não existe, inicia as estruturas vazias
+        save_data_to_json()
 
-# Carregar dados de usuários e administrador do arquivo JSON
-usuarios, administrador = load_data_from_json()
+# Carregar os dados do arquivo JSON ao iniciar o programa
+load_data_from_json()
 
-# Função para gerar PIN aleatório para novos usuários
+# Função para gerar um PIN aleatório
 def gerar_pin_aleatorio():
     pin = ''.join(str(random.randint(0, 9)) for _ in range(5))
     return pin
@@ -49,39 +61,30 @@ def validar_email(email):
     padrao = r'^[\w\.-]+@[\w\.-]+$'
     return re.match(padrao, email) is not None
 
-# Função para salvar os dados de usuários e administrador em JSON
-def save_data_to_json():
-    data = {
-        "usuarios": usuarios,
-        "administrador": administrador
-    }
-    with open('data.json', 'w') as json_file:
-        json.dump(data, json_file, indent=4)
-
-# Função para realizar o cadastro
+# Função para realizar o cadastro de um usuário
 def cadastro():
-    print("Por Favor, insira seu nome:")
+    print("Por favor, insira seu nome:")
     nome_usuario = input()
     if re.search("\d", nome_usuario):
         print("Erro: Nomes não podem conter números.")
         return
 
-    print("Por Favor, insira seu número de telefone no formato xxxxxxxxxxx:")
+    print("Por favor, insira seu número de telefone no formato xxxxxxxxxxx:")
     telefone_usuario = input()
     if not validar_numero_telefone(telefone_usuario):
         print("Erro: Número de telefone inválido. Use o formato xxxxxxxxxxx.")
         return
 
-    print("Por Favor, insira seu endereço de e-mail:")
+    print("Por favor, insira seu endereço de e-mail:")
     email_usuario = input()
     if not validar_email(email_usuario):
         print("Erro: Endereço de e-mail inválido.")
         return
 
-    # Fazendo um sorteio para gerar o PIN (com 5 dígitos)
+    # Gere um PIN aleatório
     pin_aleatorio = gerar_pin_aleatorio()
 
-    # Atualizando o dicionário de usuários com os novos dados gerados
+    # Atualize o dicionário de usuários com os novos dados gerados
     usuarios[pin_aleatorio] = {
         "nome": nome_usuario,
         "infos": {
@@ -100,244 +103,177 @@ def cadastro():
         }
     }
 
-    # Exibindo novo usuário e exibindo o PIN gerado
-    print(f"Bem vindx {nome_usuario}!\nO seu PIN é: {pin_aleatorio}. Lembre-se, ele é único, guarde ele com carinho (>‿◠)")
+    # Exiba o novo usuário e o PIN gerado
+    print(f"Bem-vindo {nome_usuario}!\nSeu PIN é: {pin_aleatorio}. Guarde-o com cuidado!")
 
-# Função para simular o dado (qtd de kg depositados p/ utilizar na função(opcao_reciclar))
-def sorteio_entrada_dados():
-    return random.randint(1, 10)  # Modifique o intervalo conforme necessário
-
-# Função para adicionar os pontos e kg dos materiais na reciclagem
-def adicionar_pontos_e_material(pin, material, quantidade_pontos, quantidade_material):
-    if pin in usuarios:
-        usuario = usuarios[pin]
-        if "Dados" not in usuario:
-            usuario["Dados"] = {}
-        if "reciclagem_kg" not in usuario["Dados"]:
-            usuario["Dados"]["reciclagem_kg"] = {}
-        if "Pontos" not in usuario["Dados"]:
-            usuario["Dados"]["Pontos"] = 0
-
-        # Atualize a quantidade de material reciclado
-        if material in usuario["Dados"]["reciclagem_kg"]:
-            usuario["Dados"]["reciclagem_kg"][material] += quantidade_material
-        else:
-            usuario["Dados"]["reciclagem_kg"][material] = quantidade_material
-
-        # Atualize a quantidade de pontos
-        usuario["Dados"]["Pontos"] += quantidade_pontos
-    else:
-        print("PIN de usuário não encontrado.")
-
-# Função para reciclar
+# Função para realizar a reciclagem
 def opcao_reciclar():
     while True:
-        print(
-            "Por Favor, escolha o material que deseja depositar:\n"
-            "(1)\tPapel\n"
-            "(2)\tPlástico\n"
-            "(3)\tVidro\n"
-            "(4)\tMetal\n"
-            "(5)\tEletrônicos\n")
-        escolha_reciclar = int(input())
+        print("Por favor, escolha o material que deseja depositar:")
+        print("(1)\tPapel")
+        print("(2)\tPlástico")
+        print("(3)\tVidro")
+        print("(4)\tMetal")
+        print("(5)\tEletrônicos")
+        print("(6)\tVoltar ao Menu Principal")
 
-        if escolha_reciclar == 1:
-            material = "Papel"
-        elif escolha_reciclar == 2:
-            material = "Plástico"
-        elif escolha_reciclar == 3:
-            material = "Vidro"
-        elif escolha_reciclar == 4:
-            material = "Metal"
-        elif escolha_reciclar == 5:
-            material = "Eletrônicos"
-        else:
+        escolha_reciclar = input()
+
+        if escolha_reciclar == "6":
+            break
+
+        if escolha_reciclar not in cotacao_pontos:
             print("Escolha de material inválida.")
             continue
 
-        peso = sorteio_entrada_dados()
-        pontuacao = peso * cotacao_pontos["material/Kg"][material]
+        material = escolha_reciclar
+        peso = float(input(f"Por favor, insira o peso em Kg do {material}:"))
+
+        if peso <= 0:
+            print("Peso inválido. Deve ser maior que zero.")
+            continue
+
+        pontos_ganhos = peso * cotacao_pontos[material]
 
         print(f"Material escolhido: {material}\nPeso: {peso} Kg")
-        print(f"Pontos ganhos: {pontuacao}")
+        print(f"Pontos ganhos: {pontos_ganhos}")
 
-        print("Por favor, insira o seu PIN de 5 dígitos:")
+        print("Por favor, insira seu PIN de 5 dígitos:")
         pin_do_usuario = input()
 
-        adicionar_pontos_e_material(pin_do_usuario, material, pontuacao, peso)
+        if pin_do_usuario not in usuarios:
+            print("PIN de usuário não encontrado.")
+            continue
 
-        while True:
-            print("Confirmar operação\n(1)\tSim\n(2)\tNão")
-            confirmar_op = int(input())
-            if confirmar_op == 1:
-                break
-            elif confirmar_op == 2:
-                break
+        # Atualizar os dados do usuário
+        usuario = usuarios[pin_do_usuario]
+        usuario["Dados"]["reciclagem_kg"][material] += peso
+        usuario["Dados"]["Pontos"] += pontos_ganhos
 
-        print("Deseja reciclar mais um material? (1)\tSim\n(2)\tNão")
-        continuar_reciclando = int(input())
-        if continuar_reciclando != 1:
+        print("Operação confirmada. Deseja reciclar mais um material? (S para Sim, qualquer outra tecla para não)")
+        continuar_reciclando = input().strip().lower()
+        if continuar_reciclando != "s":
             break
 
-# Função para exibir extrato de pontos do usuário
-def exibir_extrato_pontos(pin):
-    if pin in usuarios:
-        usuario = usuarios[pin]
-        print(f"Extrato de Pontos do Usuário ({pin}):\n")
+# Função para exibir o extrato de pontos do usuário
+def extrato_pontos():
+    print("Por favor, insira seu PIN de 5 dígitos:")
+    pin_do_usuario = input()
+
+    if pin_do_usuario in usuarios:
+        usuario = usuarios[pin_do_usuario]
+        print(f"Extrato de Pontos do Usuário ({pin_do_usuario}):\n")
         print(f"Nome: {usuario['nome']}")
         print(f"Pontos: {usuario['Dados']['Pontos']}\n")
     else:
         print("Usuário não encontrado.")
 
 # Função para exibir informações do usuário
-def exibir_informacoes_usuario(pin):
-    if pin in usuarios:
-        usuario = usuarios[pin]
-        print(f"Informações do Usuário ({pin}):\n")
+def informacoes_usuario():
+    print("Por favor, insira seu PIN de 5 dígitos:")
+    pin_do_usuario = input()
+
+    if pin_do_usuario in usuarios:
+        usuario = usuarios[pin_do_usuario]
+        print(f"Informações do Usuário ({pin_do_usuario}):\n")
         print(f"Nome: {usuario['nome']}")
         print(f"Email: {usuario['infos']['Email']}")
-        print(f"Telefone: {usuario['infos']['Telefone']}\n")
-        print("Reciclagem por tipo de material:")
-        for material, quantidade in usuario['Dados']['reciclagem_kg'].items():
-            print(f"{material}: {quantidade} Kg")
+        print(f"Telefone: {usuario['infos']['Telefone']}")
+        print("Dados de Reciclagem:")
+        for material, kg in usuario['Dados']['reciclagem_kg'].items():
+            print(f"{material}: {kg} Kg")
         print(f"Pontos: {usuario['Dados']['Pontos']}\n")
     else:
         print("Usuário não encontrado.")
 
-# Função para exibir cotação de pontos atual
-def exibir_cotacao_pontos():
-    print("Cotação Atual de Materiais (Pontos por Kg):\n")
-    for material, pontos in cotacao_pontos["material/Kg"].items():
-        print(f"{material}: {pontos} pontos por Kg")
-
-# Lista usuarios para o adm
+# Função para listar todos os usuários
 def listar_usuarios():
-    print("\nLista de Usuários:\n")
+    print("Lista de Usuários:")
     for pin, usuario in usuarios.items():
-        print(f"PIN: {pin}")
-        print(f"Nome: {usuario['nome']}")
-        print(f"Email: {usuario['infos']['Email']}")
-        print(f"Telefone: {usuario['infos']['Telefone']}")
-        print(f"Pontos: {usuario['Dados']['Pontos']}")
-        print("Reciclagem por tipo de material:")
-        for material, quantidade in usuario['Dados']['reciclagem_kg'].items():
-            print(f"{material}: {quantidade} Kg")
-        print("\n")
+        print(f"PIN: {pin}\tNome: {usuario['nome']}")
+        print("Email: {0}".format(usuario['infos']['Email']))
+        print("Telefone: {0}".format(usuario['infos']['Telefone']))
+        print("Pontos: {0}\n".format(usuario['Dados']['Pontos']))
 
-# Função para o adm conseguir mudar a cotação de pontos
+# Função para mudar a cotação de pontos de materiais
 def mudar_cotacao_pontos():
-    print("\nMudar Cotação de Pontos:\n")
-    print("Escolha um material para atualizar a cotação:")
-    print("(1) Papel")
-    print("(2) Plástico")
-    print("(3) Vidro")
-    print("(4) Metal")
-    print("(5) Eletrônicos")
-    print("(6) Voltar ao Menu do Administrador")
+    print("Mudar Cotação de Pontos:")
+    for material, pontos in cotacao_pontos.items():
+        print(f"Atual Cotação de Pontos para {material}: {pontos}")
+        nova_cotacao = float(input(f"Insira a nova cotação de pontos para {material}: "))
+        if nova_cotacao >= 0:
+            cotacao_pontos[material] = nova_cotacao
+        else:
+            print("Cotação de pontos inválida. Deve ser maior ou igual a zero.")
 
-    escolha_material = input()
-
-    if escolha_material == "1":
-        material = "Papel"
-    elif escolha_material == "2":
-        material = "Plástico"
-    elif escolha_material == "3":
-        material = "Vidro"
-    elif escolha_material == "4":
-        material = "Metal"
-    elif escolha_material == "5":
-        material = "Eletrônicos"
-    elif escolha_material == "6":
-        return
-
-    print(f"Digite a nova cotação de pontos para {material} (atual: {cotacao_pontos['material/Kg'][material]}):")
-    nova_cotacao = int(input())
-
-    cotacao_pontos['material/Kg'][material] = nova_cotacao
-    print(f"A cotação de pontos para {material} foi atualizada para {nova_cotacao} pontos por Kg.")
-
-# Função para alterar informações de um usuário
+# Função para alterar informações do usuário
 def alterar_informacoes_usuario():
-    print("\nAlterar Informações de Usuário:\n")
-    print("Digite o PIN do usuário que deseja alterar:")
-    pin_usuario = input()
+    print("Por favor, insira seu PIN de 5 dígitos:")
+    pin_do_usuario = input()
 
-    if pin_usuario not in usuarios:
-        print("Usuário não encontrado.")
-        return
+    if pin_do_usuario in usuarios:
+        usuario = usuarios[pin_do_usuario]
+        print(f"Informações do Usuário ({pin_do_usuario}):\n")
+        print(f"Nome atual: {usuario['nome']}")
+        novo_nome = input("Insira o novo nome (ou apenas pressione Enter para manter o nome atual): ")
+        if novo_nome and not re.search("\d", novo_nome):
+            usuario['nome'] = novo_nome
+        else:
+            print("Nome inválido ou contém números. Mantendo o nome atual.")
 
-    usuario = usuarios[pin_usuario]
-
-    print(f"Nome atual: {usuario['nome']}")
-    novo_nome = input("Digite o novo nome (ou deixe em branco para manter o atual): ")
-
-    if novo_nome:
-        usuario['nome'] = novo_nome
-
-    print(f"Email atual: {usuario['infos']['Email']}")
-    novo_email = input("Digite o novo email (ou deixe em branco para manter o atual): ")
-
-    if novo_email:
-        if validar_email(novo_email):
+        print(f"Email atual: {usuario['infos']['Email']}")
+        novo_email = input("Insira o novo email (ou apenas pressione Enter para manter o email atual): ")
+        if novo_email and validar_email(novo_email):
             usuario['infos']['Email'] = novo_email
         else:
-            print("Email inválido. As informações não foram alteradas.")
-            return
+            print("Email inválido ou em branco. Mantendo o email atual.")
 
-    print(f"Telefone atual: {usuario['infos']['Telefone']}")
-    novo_telefone = input("Digite o novo telefone (ou deixe em branco para manter o atual): ")
-
-    if novo_telefone:
-        if validar_numero_telefone(novo_telefone):
+        print(f"Telefone atual: {usuario['infos']['Telefone']}")
+        novo_telefone = input("Insira o novo número de telefone (ou apenas pressione Enter para manter o telefone atual): ")
+        if novo_telefone and validar_numero_telefone(novo_telefone):
             usuario['infos']['Telefone'] = novo_telefone
         else:
-            print("Telefone inválido. As informações não foram alteradas.")
-            return
+            print("Número de telefone inválido ou em branco. Mantendo o telefone atual.")
 
-    print(f"As informações do usuário {pin_usuario} foram alteradas com sucesso.")
-
-# Função para excluir um usuário (apenas adm possui esse acesso)
-def excluir_usuario():
-    print("\nExcluir Usuário:\n")
-    print("Digite o PIN do usuário que deseja excluir:")
-    pin_usuario = input()
-
-    if pin_usuario not in usuarios:
-        print("Usuário não encontrado.")
-        return
-
-    print(
-        f"Tem certeza de que deseja excluir o usuário {pin_usuario}?\n(S)\tpara SIM\nQualquer outra tecla para cancelar)")
-    confirmacao = input().strip().lower()
-
-    if confirmacao == 's':
-        del usuarios[pin_usuario]
-        print(f"O usuário {pin_usuario} foi excluído com sucesso.")
+        print("Informações atualizadas com sucesso.")
     else:
-        print("A exclusão foi cancelada.")
+        print("Usuário não encontrado.")
 
-# Função para adicionar um novo usuário (apenas adm possui esse acesso)
+# Função para excluir um usuário
+def excluir_usuario():
+    print("Por favor, insira o PIN de 5 dígitos do usuário que deseja excluir:")
+    pin_do_usuario = input()
+    if pin_do_usuario in usuarios:
+        usuario = usuarios.pop(pin_do_usuario)
+        print(f"Usuário {usuario['nome']} removido com sucesso.")
+    else:
+        print("Usuário não encontrado.")
+
+# Função para adicionar um usuário (somente para o administrador)
 def adicionar_usuario():
-    print("\nAdicionar Novo Usuário:\n")
-
-    nome_usuario = input("Digite o nome do novo usuário: ")
+    print("Insira o nome do novo usuário:")
+    nome_usuario = input()
     if re.search("\d", nome_usuario):
         print("Erro: Nomes não podem conter números.")
         return
 
-    telefone_usuario = input("Digite o número de telefone no formato xxxxxxxxxxx: ")
+    print("Insira o número de telefone do novo usuário no formato xxxxxxxxxxx:")
+    telefone_usuario = input()
     if not validar_numero_telefone(telefone_usuario):
         print("Erro: Número de telefone inválido. Use o formato xxxxxxxxxxx.")
         return
 
-    email_usuario = input("Digite o endereço de e-mail: ")
+    print("Insira o endereço de e-mail do novo usuário:")
+    email_usuario = input()
     if not validar_email(email_usuario):
         print("Erro: Endereço de e-mail inválido.")
         return
 
-    novo_pin = gerar_pin_aleatorio()
+    # Gere um PIN aleatório
+    pin_aleatorio = gerar_pin_aleatorio()
 
-    usuarios[novo_pin] = {
+    # Atualize o dicionário de usuários com os novos dados gerados
+    usuarios[pin_aleatorio] = {
         "nome": nome_usuario,
         "infos": {
             "Email": email_usuario,
@@ -353,100 +289,77 @@ def adicionar_usuario():
             },
             "Pontos": 0
         }
+
     }
 
-    print(f"Novo usuário adicionado com sucesso. PIN: {novo_pin}")
+    print(f"Usuário {nome_usuario} adicionado com sucesso!\nSeu PIN é: {pin_aleatorio}. Guarde-o com cuidado!")
+
+# Função principal para o menu do programa
+def main_menu():
+    while True:
+        print("Bem-vindo ao Sistema de Reciclagem Reuse!")
+        print("Escolha uma opção:")
+        print("(1) Cadastro")
+        print("(2) Reciclar")
+        print("(3) Extrato de Pontos")
+        print("(4) Informações do Usuário")
+        print("(5) Sair")
+
+        opcao = input()
+
+        if opcao == "1":
+            cadastro()
+        elif opcao == "2":
+            opcao_reciclar()
+        elif opcao == "3":
+            extrato_pontos()
+        elif opcao == "4":
+            informacoes_usuario()
+        elif opcao == "5":
+            save_data_to_json()
+            print("Obrigado por usar o Reuse. Até mais!")
+            break
+        elif opcao == "adm":
+            # Área restrita para o administrador
+            print("Por favor, insira o PIN de administrador (66666):")
+            pin_adm = input()
+            if pin_adm == "66666":
+                admin_menu()
+            else:
+                print("Acesso negado. PIN de administrador incorreto.")
+        else:
+            print("Escolha inválida. Tente novamente.")
 
 # Função para o menu do administrador
-def nav_menu_adm():
+def admin_menu():
     while True:
         print("Menu do Administrador:")
         print("Escolha uma opção:")
-        print("(1) Cotação de Pontos Atual")
+        print("(1) Listar Usuários")
         print("(2) Mudar Cotação de Pontos")
-        print("(3) Lista de Usuários")
-        print("(4) Alterar Informações de Usuário")
-        print("(5) Excluir Usuário")
-        print("(6) Adicionar Usuário")
-        print("(7) Sair")
+        print("(3) Alterar Informações de Usuário")
+        print("(4) Excluir Usuário")
+        print("(5) Adicionar Usuário")
+        print("(6) Sair do Menu do Administrador")
 
-        escolha_administrador = input()
+        opcao_adm = input()
 
-        if escolha_administrador == "1":
-            exibir_cotacao_pontos()
-        elif escolha_administrador == "2":
-            mudar_cotacao_pontos()
-        elif escolha_administrador == "3":
+        if opcao_adm == "1":
             listar_usuarios()
-        elif escolha_administrador == "4":
+        elif opcao_adm == "2":
+            mudar_cotacao_pontos()
+        elif opcao_adm == "3":
             alterar_informacoes_usuario()
-        elif escolha_administrador == "5":
+        elif opcao_adm == "4":
             excluir_usuario()
-        elif escolha_administrador == "6":
+        elif opcao_adm == "5":
             adicionar_usuario()
-        elif escolha_administrador == "7":
-            break
-        else:
-            print("Opção inválida. Por favor, escolha uma opção válida.")
-
-# Função para o menu principal
-def main_menu():
-    while True:
-        # Desejando boas vindas ao usuário
-        print("*************************")
-        print("****Bem Vindo a reUse****")
-        print("*************************")
-
-        # Menu inicial
-        print("Escolha uma opção:")
-        print("(1)\tEntrar\n"
-              "(2)\tCadastrar-se\n"
-              "(3)\tSair")
-        escolha_menu_inicial = input()
-
-        # Estrutura de decisão para decidir qual menu vai ser exibido (adm ou usuário)
-        if escolha_menu_inicial == "1":
-            print("Por favor insira o seu PIN de 5 dígitos:")
-            pin = input()
-            if pin == "66666":
-                print("*Área restrita reUse*\n")
-                nav_menu_adm()
-            elif pin in usuarios:
-                usuario = usuarios[pin]
-                print(f"Bem-vindo, {usuario['nome']}! Estamos felizes em receber de volta.")
-
-                nav_menu_secundario = True
-                while nav_menu_secundario:
-                    print(
-                        "Escolha uma opção:\n"
-                        "(1)\tReciclar\n"
-                        "(2)\tExtrato de pontos\n"
-                        "(3)\tCotação Atual de materiais\n"
-                        "(4)\tVer informações do usuário\n"
-                        "(5)\tSair")
-                    escolha_menu_secundario = input()
-
-                    if escolha_menu_secundario == "1":
-                        opcao_reciclar()
-                    elif escolha_menu_secundario == "2":
-                        exibir_extrato_pontos(pin)
-                    elif escolha_menu_secundario == "3":
-                        exibir_cotacao_pontos()
-                    elif escolha_menu_secundario == "4":
-                        exibir_informacoes_usuario(pin)
-                    elif escolha_menu_secundario == "5":
-                        nav_menu_secundario = False
-            else:
-                print("PIN não encontrado. Por favor, verifique o PIN e tente novamente.")
-        elif escolha_menu_inicial == "2":
-            cadastro()
-        elif escolha_menu_inicial == "3":
+        elif opcao_adm == "6":
             save_data_to_json()
+            print("Retornando ao Menu Principal.")
             break
         else:
-            print("Opção inválida. Por favor, escolha uma opção válida.")
+            print("Escolha inválida. Tente novamente.")
 
-    print("Obrigado por usar o reUse. Até mais!")
-
-# Programa principal
+# Iniciar o programa
 main_menu()
