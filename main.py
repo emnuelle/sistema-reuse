@@ -1,6 +1,7 @@
 import random
 import re
 import json
+from datetime import datetime
 
 # Função para carregar dados a partir de um arquivo JSON
 def carregar_dados(nome_arquivo):
@@ -37,6 +38,12 @@ def validar_email(email):
     padrao = r'^[\w\.-]+@[\w\.-]+$'
     return re.match(padrao, email) is not None
 
+# Função para calcular a idade
+def calcular_idade(data_nascimento):
+    data_atual = datetime.now()
+    data_nascimento = datetime.strptime(data_nascimento, "%Y-%m-%d")
+    idade = data_atual.year - data_nascimento.year - ((data_atual.month, data_atual.day) < (data_nascimento.month, data_nascimento.day))
+    return idade
 
 # Função para realizar o cadastro
 def cadastro():
@@ -44,6 +51,15 @@ def cadastro():
     nome_usuario = input()
     if re.search("\d", nome_usuario):
         print("Erro: Nomes não podem conter números.")
+        return
+
+    print("Por Favor, insira sua data de nascimento (AAAA-MM-DD):")
+    data_nascimento = input()
+
+    idade = calcular_idade(data_nascimento)
+
+    if idade < 13:
+        print("Desculpe, apenas maiores de 13 anos podem se cadastrar.")
         return
 
     print("Por Favor, insira seu número de telefone no formato xxxxxxxxxxx:")
