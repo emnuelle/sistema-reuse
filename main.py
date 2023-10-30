@@ -1,65 +1,24 @@
 import random
 import re
+import json
 
-# Definindo a cotação dos pontos
-cotacao_pontos = {
-    "material/Kg": {
-        "Papel": 20,
-        "Plástico": 25,
-        "Vidro": 15,
-        "Metal": 10,
-        "Eletrônicos": 30
-    },
-}
+# Função para carregar dados a partir de um arquivo JSON
+def carregar_dados(nome_arquivo):
+    try:
+        with open(nome_arquivo, "r") as arquivo:
+            return json.load(arquivo)
+    except FileNotFoundError:
+        return {}
 
-# Definindo o usuário administradror
-administrador = {
-    "66666": {
-        "nome": "Administrador",
-        "infos": {
-            "Email": "admin@reuse.com"
-        },
-    },
-}
+# Função para salvar dados em um arquivo JSON
+def salvar_dados(dados, nome_arquivo):
+    with open(nome_arquivo, "w") as arquivo:
+        json.dump(dados, arquivo)
 
-# Dicionário de usuários
-usuarios = {
-    # Exemplo de usuário
-    "97973": {
-        "nome": "Emanuelle",
-        "infos": {
-            "Email": "rm97973@fiap.com.br",
-            "Telefone": "11949693019"
-        },
-        "Dados": {
-            "reciclagem_kg": {
-                "Papel": 6,
-                "Plástico": 13,
-                "Vidro": 20,
-                "Metal": 30,
-                "Eletrônicos": 5
-            },
-            "Pontos": 4563
-        },
-    },
-    "00000": {
-        "nome": "",
-        "infos": {
-            "Email": "",
-            "Telefone": ""
-        },
-        "Dados": {
-            "reciclagem_kg": {
-                "Papel": 0,
-                "Plástico": 0,
-                "Vidro": 0,
-                "Metal": 0,
-                "Eletrônicos": 0
-            },
-            "Pontos": 0,
-        },
-    }
-}
+# Carregar dados existentes ou criar novos se não existirem
+administrador = carregar_dados("administrador.json")
+usuarios = carregar_dados("usuarios.json")
+cotacao_pontos = carregar_dados("cotacao_pontos.json")
 
 # Gerando pins aleatórios para novos usuários, para a função cadastro
 def gerar_pin_aleatorio():
@@ -164,7 +123,8 @@ def opcao_reciclar():
             "(2)\tPlástico\n"
             "(3)\tVidro\n"
             "(4)\tMetal\n"
-            "(5)\tEletrônicos\n")
+            "(5)\tEletrônicos\n"
+            "(6)\tVoltar\n")
         escolha_reciclar = int(input())
 
         if escolha_reciclar == 1:
@@ -177,6 +137,8 @@ def opcao_reciclar():
             material = "Metal"
         elif escolha_reciclar == 5:
             material = "Eletrônicos"
+        elif escolha_reciclar == 6:
+            return
         else:
             print("Escolha de material inválida.")
             continue
@@ -431,10 +393,11 @@ def nav_menu_adm():
 
 while True:
     # Desejando boas vindas ao usuário
+    print()
     print("*************************")
     print("****Bem Vindo a reUse****")
     print("*************************")
-
+    print()
     # Menu inicial
     print("Escolha uma opção:")
     print("(1)\tEntrar\n"
@@ -482,5 +445,9 @@ while True:
         break
     else:
         print("Opção inválida. Por favor, escolha uma opção válida.")
+
+salvar_dados(administrador, "administrador.json")
+salvar_dados(usuarios, "usuarios.json")
+salvar_dados(cotacao_pontos, "cotacao_pontos.json")
 
 print("Obrigado por usar o reUse. Até mais!")

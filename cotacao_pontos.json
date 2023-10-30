@@ -1,0 +1,10 @@
+{
+    "material/Kg": {
+      "Papel": 20,
+      "Plástico": 25,
+      "Vidro": 15,
+      "Metal": 10,
+      "Eletrônicos": 30
+    }
+  }
+  

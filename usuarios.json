@@ -1,0 +1,37 @@
+{
+    "97973": {
+      "nome": "Emanuelle",
+      "infos": {
+        "Email": "rm97973@fiap.com.br",
+        "Telefone": "11949693019"
+      },
+      "Dados": {
+        "reciclagem_kg": {
+          "Papel": 6,
+          "Plástico": 13,
+          "Vidro": 20,
+          "Metal": 30,
+          "Eletrônicos": 5
+        },
+        "Pontos": 4563
+      }
+    },
+    "00000": {
+      "nome": "",
+      "infos": {
+        "Email": "",
+        "Telefone": ""
+      },
+      "Dados": {
+        "reciclagem_kg": {
+          "Papel": 0,
+          "Plástico": 0,
+          "Vidro": 0,
+          "Metal": 0,
+          "Eletrônicos": 0
+        },
+        "Pontos": 0
+      }
+    }
+  }
+  
