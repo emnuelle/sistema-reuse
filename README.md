@@ -13,6 +13,11 @@ O sistema de pontuação e premiação tem uma série de características notáv
 
 A abordagem da reUse cita várias lacunas na conscientização sobre a reciclagem. Primeiro, ela conecta diretamente as ações individuais com recompensas concretas, motivando as pessoas a se tornarem defensoras ativas da sustentabilidade. Em segundo lugar, o sistema cria um senso de comunidade, já que as pessoas podem compartilhar suas conquistas e colaborar para alcançar metas coletivas. Por fim, a reUse não apenas oferece incentivos pessoais, mas também estabelece um impacto positivo mais amplo, incentivando as pessoas a contribuir para o bem-estar ambiental e social.
 
+## Atualizações recentes!
+
+    > Mudança na função de cadastro: Agora o sistema só aceita cadastros á partir dos 13 anos de idade.
+    > Correções na parte visual na hora de cofirmar a reciclagem.
+    > Agora os dados são armazenados em arquivos .json
 
 **Diferente do repositório orginal do trabalho, sendo [este para os testes](https://github.com/victoriafpizza/sprintpython2) (na branch "teste_sprint_3") e [este para a atividade](https://github.com/emnuelle/ibm-challenge-sprint3-ctwp), esse repositório foi feito com a intenção de aprimorar cada vez mais o sistemada iniciativa com novas funcionalidades.** 
 
