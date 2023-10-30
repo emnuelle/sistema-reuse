@@ -155,14 +155,16 @@ def opcao_reciclar():
         adicionar_pontos_e_material(pin_do_usuario, material, pontuacao, peso)
 
         while True:
-            print("Confirmar operação\n(1)\tSim\n(2)\tNão")
+            print("Confirmar operação?\n"
+                  "(1)\tSim\n(2)\tNão")
             confirmar_op = int(input())
             if confirmar_op == 1:
                 break
             elif confirmar_op == 2:
                 break
 
-        print("Deseja reciclar mais um material? (1)\tSim\n(2)\tNão")
+        print("Deseja reciclar mais um material?\n" 
+              "(1)\tSim\n(2)\tNão")
         continuar_reciclando = int(input())
         if continuar_reciclando != 1:
             break
