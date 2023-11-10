@@ -16,7 +16,7 @@ A abordagem da reUse cita várias lacunas na conscientização sobre a reciclage
 ## Atualizações recentes!
 
     > Mudança na função de cadastro: Agora o sistema só aceita cadastros á partir dos 13 anos de idade.
-    > Correções na parte visual na hora de cofirmar a reciclagem.
+    > Correções na parte visual na hora de confirmar a reciclagem, também foi colocada a opção para voltar ao menu do usuário no menu de reciclagem.
     > Agora os dados são armazenados em arquivos .json
 
 **Diferente do repositório orginal do trabalho, sendo [este para os testes](https://github.com/victoriafpizza/sprintpython2) (na branch "teste_sprint_3") e [este para a atividade](https://github.com/emnuelle/ibm-challenge-sprint3-ctwp), esse repositório foi feito com a intenção de aprimorar cada vez mais o sistemada iniciativa com novas funcionalidades.** 
