@@ -6,14 +6,14 @@ from datetime import datetime
 # Função para carregar dados a partir de um arquivo JSON
 def carregar_dados(nome_arquivo):
     try:
-        with open(nome_arquivo, "r") as arquivo:
+        with open(nome_arquivo, "r", encoding='utf8') as arquivo:
             return json.load(arquivo)
     except FileNotFoundError:
         return {}
 
 # Função para salvar dados em um arquivo JSON
 def salvar_dados(dados, nome_arquivo):
-    with open(nome_arquivo, "w") as arquivo:
+    with open(nome_arquivo, "w", encoding='utf8') as arquivo:
         json.dump(dados, arquivo)
 
 # Carregar dados existentes ou criar novos se não existirem
